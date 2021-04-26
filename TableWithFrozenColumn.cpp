@@ -29,6 +29,11 @@ void TableWithFrozenColumn::adjustFrozenColumnAndMonthDataTable() {
     monthDataTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     // disable vertical header
     monthDataTable->verticalHeader()->setVisible(false);
+    // selections
+    connect(frozenColumn, &QTableWidget::cellClicked, this,
+            &TableWithFrozenColumn::selectFrozenColumnCell);
+    connect(monthDataTable, &QTableWidget::cellClicked, this,
+            &TableWithFrozenColumn::selectMonthDataTableCell);
 }
 
 void TableWithFrozenColumn::setTableByMonth(int year, int month) {
@@ -71,6 +76,18 @@ void TableWithFrozenColumn::addSum() {
 
 void TableWithFrozenColumn::setFrozenColumnWidth(int logicalIndex, int oldSize, int newSize) {
     frozenColumn->setFixedWidth(newSize + 13);
+}
+
+void TableWithFrozenColumn::selectFrozenColumnCell(int row, int column) {
+    QModelIndex index = frozenColumn->model()->index(row, column);
+    frozenColumn->selectionModel()->select(index, QItemSelectionModel::Select);
+    monthDataTable->clearSelection();
+}
+
+void TableWithFrozenColumn::selectMonthDataTableCell(int row, int column) {
+    QModelIndex index = monthDataTable->model()->index(row, column);
+    monthDataTable->selectionModel()->select(index, QItemSelectionModel::Select);
+    frozenColumn->clearSelection();
 }
 
 TableWithFrozenColumn::~TableWithFrozenColumn() {
