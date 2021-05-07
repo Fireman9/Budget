@@ -29,11 +29,19 @@ void TableWithFrozenColumn::adjustFrozenColumnAndMonthDataTable() {
     monthDataTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     // disable vertical header
     monthDataTable->verticalHeader()->setVisible(false);
-    // selections
+    // deselecting on frozenColumn or monthDataTable click
     connect(frozenColumn, &QTableWidget::cellClicked, this,
-            &TableWithFrozenColumn::selectFrozenColumnCell);
+            &TableWithFrozenColumn::deselectFrozenColumn);
     connect(monthDataTable, &QTableWidget::cellClicked, this,
-            &TableWithFrozenColumn::selectMonthDataTableCell);
+            &TableWithFrozenColumn::deselectMonthDataTable);
+    connect(frozenColumn->horizontalHeader(), &QHeaderView::sectionClicked, this,
+            &TableWithFrozenColumn::deselectFrozenColumn);
+    connect(monthDataTable->horizontalHeader(), &QHeaderView::sectionClicked, this,
+            &TableWithFrozenColumn::deselectMonthDataTable);
+    // select whole row
+    connect(frozenColumn->verticalHeader(), &QHeaderView::sectionClicked, this,
+            &TableWithFrozenColumn::selectRow);
+    // TODO: Multiple selection(Ctrl+Click)
 }
 
 void TableWithFrozenColumn::setTableByMonth(int year, int month) {
@@ -78,16 +86,16 @@ void TableWithFrozenColumn::setFrozenColumnWidth(int logicalIndex, int oldSize, 
     frozenColumn->setFixedWidth(newSize + 13);
 }
 
-void TableWithFrozenColumn::selectFrozenColumnCell(int row, int column) {
-    QModelIndex index = frozenColumn->model()->index(row, column);
-    frozenColumn->selectionModel()->select(index, QItemSelectionModel::Select);
+void TableWithFrozenColumn::deselectFrozenColumn() {
     monthDataTable->clearSelection();
 }
 
-void TableWithFrozenColumn::selectMonthDataTableCell(int row, int column) {
-    QModelIndex index = monthDataTable->model()->index(row, column);
-    monthDataTable->selectionModel()->select(index, QItemSelectionModel::Select);
+void TableWithFrozenColumn::deselectMonthDataTable() {
     frozenColumn->clearSelection();
+}
+
+void TableWithFrozenColumn::selectRow(int index) {
+    monthDataTable->selectRow(index);
 }
 
 TableWithFrozenColumn::~TableWithFrozenColumn() {

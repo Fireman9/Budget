@@ -24,9 +24,11 @@ public slots:
 
     void setFrozenColumnWidth(int logicalIndex, int oldSize, int newSize);
 
-    void selectFrozenColumnCell(int row, int column);
+    void deselectFrozenColumn();
 
-    void selectMonthDataTableCell(int row, int column);
+    void deselectMonthDataTable();
+
+    void selectRow(int index);
 
 private:
     QHBoxLayout *fullTableLayout;
